@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProducts, useDeleteProduct, Product } from '@/hooks/useProducts';
+import { useOrders, Order } from '@/hooks/useOrders';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +15,8 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { ProductFormDialog } from '@/components/admin/ProductFormDialog';
+import { OrdersTable } from '@/components/admin/OrdersTable';
+import { OrderDetails } from '@/components/admin/OrderDetails';
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +40,10 @@ export default function Admin() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteProductId, setDeleteProductId] = useState<string | null>(null);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
+  
+  const { data: orders, isLoading: ordersLoading } = useOrders();
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -295,20 +302,21 @@ export default function Admin() {
 
           {/* Orders Tab */}
           <TabsContent value="orders">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pedidos</CardTitle>
-              </CardHeader>
-              <CardContent className="py-16 text-center">
-                <ShoppingCart className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="font-display text-xl font-semibold mb-2">
-                  Nenhum pedido ainda
-                </h3>
-                <p className="text-muted-foreground">
-                  Os pedidos aparecerão aqui quando clientes comprarem
-                </p>
-              </CardContent>
-            </Card>
+            {ordersLoading ? (
+              <Card>
+                <CardContent className="py-16 text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto" />
+                </CardContent>
+              </Card>
+            ) : (
+              <OrdersTable
+                orders={orders || []}
+                onViewOrder={(order) => {
+                  setSelectedOrder(order);
+                  setIsOrderDetailsOpen(true);
+                }}
+              />
+            )}
           </TabsContent>
 
           {/* Settings Tab */}
@@ -355,6 +363,16 @@ export default function Admin() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Order Details Dialog */}
+      <OrderDetails
+        order={selectedOrder}
+        open={isOrderDetailsOpen}
+        onClose={() => {
+          setIsOrderDetailsOpen(false);
+          setSelectedOrder(null);
+        }}
+      />
 
       {/* Tutorial */}
       <AdminTutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
