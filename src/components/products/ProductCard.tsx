@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingBag } from 'lucide-react';
-import { Product } from '@/data/products';
+import { Product } from '@/hooks/useProducts';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -17,7 +17,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
     
-    if (!product.inStock) {
+    if (!product.in_stock) {
       toast.error('Produto indisponível');
       return;
     }
@@ -96,17 +96,17 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
             <Button
               onClick={handleAddToCart}
-              disabled={!product.inStock}
+              disabled={!product.in_stock}
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
               size="sm"
             >
               <ShoppingBag className="w-4 h-4 mr-2" />
-              {product.inStock ? 'Adicionar' : 'Indisponível'}
+              {product.in_stock ? 'Adicionar' : 'Indisponível'}
             </Button>
           </div>
 
           {/* Out of Stock Overlay */}
-          {!product.inStock && (
+          {!product.in_stock && (
             <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center">
               <span className="px-4 py-2 bg-foreground text-background font-medium rounded-lg">
                 Indisponível
