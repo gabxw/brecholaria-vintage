@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Truck, Shield, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/products/ProductCard';
-import { products, categories } from '@/data/products';
+import { useProducts } from '@/hooks/useProducts';
 import heroBanner from '@/assets/hero-banner.jpg';
 
-const featuredProducts = products.filter(p => p.featured).slice(0, 4);
+const categories = ['Vestidos', 'Blusas', 'Calças', 'Jaquetas', 'Acessórios', 'Sapatos'];
 
 export default function Index() {
+  const { data: products, isLoading } = useProducts();
+  const featuredProducts = products?.filter(p => p.featured).slice(0, 4) || [];
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -72,7 +75,20 @@ export default function Index() {
             <Button asChild variant="outline"><Link to="/produtos">Ver todos <ArrowRight className="w-4 h-4 ml-2" /></Link></Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product, i) => <ProductCard key={product.id} product={product} index={i} />)}
+            {isLoading ? (
+              <div className="col-span-full text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto" />
+              </div>
+            ) : featuredProducts.length > 0 ? (
+              featuredProducts.map((product, i) => <ProductCard key={product.id} product={product} index={i} />)
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-muted-foreground">Nenhum produto em destaque no momento.</p>
+                <Button asChild variant="outline" className="mt-4">
+                  <Link to="/produtos">Ver todos os produtos</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </section>

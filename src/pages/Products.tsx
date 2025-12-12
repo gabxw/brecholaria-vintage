@@ -2,13 +2,18 @@ import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { ProductGrid } from '@/components/products/ProductGrid';
-import { products, categories, sizes, conditions } from '@/data/products';
+import { useProducts } from '@/hooks/useProducts';
+
+const categories = ['Todos', 'Vestidos', 'Blusas', 'Calças', 'Jaquetas', 'Acessórios', 'Sapatos'];
+const sizes = ['PP', 'P', 'M', 'G', 'GG', 'Único'];
+const conditions = ['novo', 'excelente', 'bom', 'usado'];
 import { Filter, X, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Products() {
+  const { data: products, isLoading } = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
   const [search, setSearch] = useState('');
@@ -34,6 +39,7 @@ export default function Products() {
   };
 
   const filteredProducts = useMemo(() => {
+    if (!products) return [];
     let result = [...products];
 
     // Search
@@ -144,7 +150,7 @@ export default function Products() {
                 <SelectContent>
                   <SelectItem value="all">Todas</SelectItem>
                   {conditions.map(c => (
-                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                    <SelectItem key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -228,7 +234,7 @@ export default function Products() {
                   <SelectContent>
                     <SelectItem value="all">Todas</SelectItem>
                     {conditions.map(c => (
-                      <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                      <SelectItem key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -254,7 +260,14 @@ export default function Products() {
           </p>
 
           {/* Products Grid */}
-          <ProductGrid products={filteredProducts} />
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto" />
+              <p className="text-muted-foreground mt-4">Carregando produtos...</p>
+            </div>
+          ) : (
+            <ProductGrid products={filteredProducts} />
+          )}
         </div>
       </section>
     </Layout>
