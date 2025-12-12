@@ -16,7 +16,7 @@ const passwordSchema = z.string().min(6, 'Senha deve ter no mínimo 6 caracteres
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-  const { user, isAdmin, loading, signIn, signUp } = useAuth();
+  const { user, isAdmin, loading, checkingAdmin, signIn, signUp } = useAuth();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -86,16 +86,23 @@ export default function AdminLogin() {
     setIsSubmitting(false);
   };
 
-  if (loading) {
+  // Show loading while checking auth or admin status
+  if (loading || checkingAdmin) {
     return (
       <Layout>
         <div className="min-h-[60vh] flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4" />
+            <p className="text-muted-foreground">
+              {checkingAdmin ? 'Verificando permissões...' : 'Carregando...'}
+            </p>
+          </div>
         </div>
       </Layout>
     );
   }
 
+  // Only show access denied after admin check is complete
   if (user && !isAdmin) {
     return (
       <Layout>

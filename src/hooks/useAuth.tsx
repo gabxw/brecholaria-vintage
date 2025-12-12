@@ -7,6 +7,7 @@ interface AuthContextType {
   session: Session | null;
   isAdmin: boolean;
   loading: boolean;
+  checkingAdmin: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -19,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [checkingAdmin, setCheckingAdmin] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -53,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const checkAdminRole = async (userId: string) => {
+    setCheckingAdmin(true);
     try {
       const { data, error } = await supabase
         .from('user_roles')
@@ -64,13 +67,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         console.error('Error checking admin role:', error);
         setIsAdmin(false);
+        setCheckingAdmin(false);
         return;
       }
 
       setIsAdmin(!!data);
+      setCheckingAdmin(false);
     } catch (err) {
       console.error('Error checking admin role:', err);
       setIsAdmin(false);
+      setCheckingAdmin(false);
     }
   };
 
@@ -106,6 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       isAdmin,
       loading,
+      checkingAdmin,
       signIn,
       signUp,
       signOut
