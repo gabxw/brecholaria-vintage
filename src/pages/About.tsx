@@ -40,7 +40,7 @@ export default function About() {
                   a celebração da diversidade, da criatividade e da alegria de ser diferente.
                 </p>
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  Assim como o bufão medieval, que ousava vestir-se de forma única e colorida, 
+                  vestir-se de forma única e colorida, 
                   acreditamos que a moda é uma forma de expressão pessoal e autêntica.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">

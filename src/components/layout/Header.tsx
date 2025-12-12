@@ -31,7 +31,7 @@ export function Header() {
                 Brecholaria
               </span>
               <span className="text-xs text-muted-foreground -mt-1">
-                Brechó Estiloso
+                central
               </span>
             </div>
           </Link>
