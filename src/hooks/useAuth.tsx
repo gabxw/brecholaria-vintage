@@ -55,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const checkAdminRole = async (userId: string) => {
+    console.log('🔍 [DEBUG] Checking admin role for user:', userId);
     setCheckingAdmin(true);
     try {
       const { data, error } = await supabase
@@ -64,27 +65,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('role', 'admin')
         .maybeSingle();
 
+      console.log('🔍 [DEBUG] Query result:', { data, error });
+
       if (error) {
-        console.error('Error checking admin role:', error);
+        console.error('❌ [DEBUG] Error checking admin role:', error);
         setIsAdmin(false);
         setCheckingAdmin(false);
         return;
       }
 
-      setIsAdmin(!!data);
+      const isAdminUser = !!data;
+      console.log('🔍 [DEBUG] Is admin?', isAdminUser);
+      setIsAdmin(isAdminUser);
       setCheckingAdmin(false);
     } catch (err) {
-      console.error('Error checking admin role:', err);
+      console.error('❌ [DEBUG] Exception checking admin role:', err);
       setIsAdmin(false);
       setCheckingAdmin(false);
     }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    console.log('🔑 [DEBUG] Attempting sign in for:', email);
+    const { error, data } = await supabase.auth.signInWithPassword({
       email,
       password
     });
+    console.log('🔑 [DEBUG] Sign in result:', { error, userId: data?.user?.id });
     return { error };
   };
 
