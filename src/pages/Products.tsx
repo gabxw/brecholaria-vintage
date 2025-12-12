@@ -125,24 +125,24 @@ export default function Products() {
                 </SelectContent>
               </Select>
 
-              <Select value={selectedSize} onValueChange={(v) => updateFilter('tamanho', v)}>
+              <Select value={selectedSize || "all"} onValueChange={(v) => updateFilter('tamanho', v === "all" ? "" : v)}>
                 <SelectTrigger className="w-[140px] bg-card">
                   <SelectValue placeholder="Tamanho" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   {sizes.map(size => (
                     <SelectItem key={size} value={size}>{size}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
 
-              <Select value={selectedCondition} onValueChange={(v) => updateFilter('condicao', v)}>
+              <Select value={selectedCondition || "all"} onValueChange={(v) => updateFilter('condicao', v === "all" ? "" : v)}>
                 <SelectTrigger className="w-[160px] bg-card">
                   <SelectValue placeholder="Condição" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
                   {conditions.map(c => (
                     <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
                   ))}
@@ -209,24 +209,24 @@ export default function Products() {
                   </SelectContent>
                 </Select>
 
-                <Select value={selectedSize} onValueChange={(v) => updateFilter('tamanho', v)}>
+                <Select value={selectedSize || "all"} onValueChange={(v) => updateFilter('tamanho', v === "all" ? "" : v)}>
                   <SelectTrigger className="bg-background">
                     <SelectValue placeholder="Tamanho" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="all">Todos</SelectItem>
                     {sizes.map(size => (
                       <SelectItem key={size} value={size}>{size}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
 
-                <Select value={selectedCondition} onValueChange={(v) => updateFilter('condicao', v)}>
+                <Select value={selectedCondition || "all"} onValueChange={(v) => updateFilter('condicao', v === "all" ? "" : v)}>
                   <SelectTrigger className="bg-background">
                     <SelectValue placeholder="Condição" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas</SelectItem>
+                    <SelectItem value="all">Todas</SelectItem>
                     {conditions.map(c => (
                       <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
                     ))}
