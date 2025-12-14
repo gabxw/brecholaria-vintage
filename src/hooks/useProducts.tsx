@@ -68,17 +68,21 @@ export function useProduct(id: string) {
   return useQuery({
     queryKey: ['products', id],
     queryFn: async () => {
+      console.log('🔍 [useProduct] Fetching product with ID:', id);
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .eq('id', id)
         .maybeSingle();
 
+      console.log('🔍 [useProduct] Query result:', { data, error });
+
       if (error) {
-        console.error('Error fetching product:', error);
+        console.error('❌ [useProduct] Error fetching product:', error);
         throw error;
       }
 
+      console.log('🔍 [useProduct] Returning product:', data);
       return data as Product | null;
     },
     enabled: !!id

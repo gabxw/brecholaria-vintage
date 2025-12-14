@@ -1,6 +1,6 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
-import { products } from '@/data/products';
+import { useProduct } from '@/hooks/useProducts';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag, Heart, ArrowLeft, Truck, Shield, Ruler } from 'lucide-react';
@@ -10,8 +10,21 @@ export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  
+  console.log('🔍 [ProductDetail] URL param ID:', id);
+  const { data: product, isLoading } = useProduct(id || '');
+  console.log('🔍 [ProductDetail] Product data:', product, 'Loading:', isLoading);
 
-  const product = products.find(p => p.id === id);
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-20 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Carregando produto...</p>
+        </div>
+      </Layout>
+    );
+  }
 
   if (!product) {
     return (
@@ -33,7 +46,7 @@ export default function ProductDetail() {
   }
 
   const handleAddToCart = () => {
-    if (!product.inStock) {
+    if (!product.in_stock) {
       toast.error('Produto indisponível');
       return;
     }
@@ -104,13 +117,13 @@ export default function ProductDetail() {
               <span className="font-display text-3xl font-bold text-primary">
                 R$ {product.price.toFixed(2).replace('.', ',')}
               </span>
-              {product.originalPrice && (
+              {product.original_price && (
                 <>
                   <span className="text-lg text-muted-foreground line-through">
-                    R$ {product.originalPrice.toFixed(2).replace('.', ',')}
+                    R$ {product.original_price.toFixed(2).replace('.', ',')}
                   </span>
                   <span className="px-2 py-1 text-sm bg-primary text-primary-foreground rounded">
-                    -{Math.round((1 - product.price / product.originalPrice) * 100)}%
+                    -{Math.round((1 - product.price / product.original_price) * 100)}%
                   </span>
                 </>
               )}
@@ -159,43 +172,34 @@ export default function ProductDetail() {
 
             {/* Actions */}
             <div className="flex gap-4 mb-8">
-              <Button
+              <Button 
+                size="lg" 
+                className="flex-1 text-lg h-14"
                 onClick={handleAddToCart}
-                disabled={!product.inStock}
-                size="lg"
-                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+                disabled={!product.in_stock}
               >
                 <ShoppingBag className="w-5 h-5 mr-2" />
-                {product.inStock ? 'Adicionar ao Carrinho' : 'Indisponível'}
+                {product.in_stock ? 'Adicionar ao Carrinho' : 'Indisponível'}
               </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-border"
-                onClick={() => toast.info('Em breve: Lista de desejos!')}
-              >
+              <Button size="lg" variant="outline" className="h-14 px-6">
                 <Heart className="w-5 h-5" />
               </Button>
             </div>
 
-            {/* Benefits */}
-            <div className="space-y-4 pt-8 border-t border-border">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Truck className="w-5 h-5 text-primary" />
-                </div>
+            {/* Info Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex gap-3 p-4 bg-muted/30 rounded-lg">
+                <Truck className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-foreground">Envio para todo Brasil</h4>
-                  <p className="text-sm text-muted-foreground">Frete calculado no checkout</p>
+                  <h4 className="font-semibold text-sm mb-1">Frete Grátis</h4>
+                  <p className="text-xs text-muted-foreground">Para compras acima de R$ 200</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-secondary" />
-                </div>
+              <div className="flex gap-3 p-4 bg-muted/30 rounded-lg">
+                <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-foreground">Compra garantida</h4>
-                  <p className="text-sm text-muted-foreground">Peça conferida e embalada com cuidado</p>
+                  <h4 className="font-semibold text-sm mb-1">Compra Segura</h4>
+                  <p className="text-xs text-muted-foreground">Pagamento 100% protegido</p>
                 </div>
               </div>
             </div>
