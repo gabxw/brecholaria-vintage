@@ -55,7 +55,7 @@ export default function ProductDetail() {
     });
   };
 
-  const conditionLabels = {
+  const conditionLabels: Record<string, string> = {
     novo: 'Novo com etiqueta',
     excelente: 'Excelente estado',
     bom: 'Bom estado',
